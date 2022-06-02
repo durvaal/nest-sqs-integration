@@ -1,0 +1,79 @@
+{
+	"info": {
+		"_postman_id": "c1a2bb62-8b36-40eb-ae7f-965a66d36292",
+		"name": "sqs-integration",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20282012"
+	},
+	"item": [
+		{
+			"name": "create queue",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/sqs-manager/create-queue",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"sqs-manager",
+						"create-queue"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"{{$guid}}\",\r\n    \"name\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"phone\": \"{{$randomPhoneNumber}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/sqs-manager/send-message",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"sqs-manager",
+						"send-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "receive messages",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/sqs-manager/receive-message",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"sqs-manager",
+						"receive-message"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
