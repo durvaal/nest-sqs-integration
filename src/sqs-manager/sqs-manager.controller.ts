@@ -11,6 +11,11 @@ export class SqsManagerController {
     return this.sqsManagerService.createQueue();
   }
 
+  @Get('queue-attributes')
+  async getQueueAttributes() {
+    return this.sqsManagerService.getQueueAttributes();
+  }
+
   @Post('send-message')
   async sendMessage(@Body() sqsMessageDto: SqsMessageDto) {
     return this.sqsManagerService.sendMessage(sqsMessageDto);

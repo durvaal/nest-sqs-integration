@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { SQS } from 'aws-sdk';
 import { InjectAwsService } from 'nest-aws-sdk';
+import { ConfigService } from 'src/config/config.service';
 import { SqsMessageDto } from './dto/sqs-message.dto';
 
 @Injectable()
 export class SqsManagerService {
-  private readonly queueName = process.env.AWS_QUEUE_NAME;
-  private readonly queueUrl = `${process.env.AWS_SERVICE_ENDPOINT}/${process.env.AWS_ACCOUNT_ID}/${this.queueName}`;
+  private readonly QUEUE_NAME = ConfigService.getENV().AWS_QUEUE_NAME;
+  private readonly QUEUE_URL = `${ConfigService.getENV().AWS_SERVICE_ENDPOINT}/${ConfigService.getENV().AWS_ACCOUNT_ID}/${this.QUEUE_NAME}`;
 
   constructor(
     @InjectAwsService(SQS) private readonly sqs: SQS,
@@ -15,7 +16,7 @@ export class SqsManagerService {
   async createQueue() {
     try {
       const createParams: SQS.Types.CreateQueueRequest = {
-        QueueName: this.queueName,
+        QueueName: this.QUEUE_NAME
       };
   
       return this.sqs.createQueue(createParams).promise();
@@ -24,10 +25,23 @@ export class SqsManagerService {
     }
   }
 
+  async getQueueAttributes() {
+    try {
+      const createParams: SQS.Types.GetQueueAttributesRequest = {
+        QueueUrl: this.QUEUE_URL,
+        AttributeNames: ['All']
+      };
+  
+      return this.sqs.getQueueAttributes(createParams).promise();
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
   async sendMessage(sqsMessageDto: SqsMessageDto) {
     try {
       const sendParams: SQS.Types.SendMessageRequest = {
-        QueueUrl: this.queueUrl,
+        QueueUrl: this.QUEUE_URL,
         MessageBody: JSON.stringify(sqsMessageDto)
       };
   
@@ -40,7 +54,7 @@ export class SqsManagerService {
   async receiveMessage() {
     try {
       const receiveParams: SQS.Types.ReceiveMessageRequest = {
-        QueueUrl: this.queueUrl
+        QueueUrl: this.QUEUE_URL
       };
       
       const receiveMessageResult = await this.sqs.receiveMessage(receiveParams).promise();
@@ -66,7 +80,7 @@ export class SqsManagerService {
   private async deleteMessage(receiptHandle: string) {
     try {
       const deleteParams: SQS.Types.DeleteMessageRequest = {
-        QueueUrl: this.queueUrl,
+        QueueUrl: this.QUEUE_URL,
         ReceiptHandle: receiptHandle
       };
   
